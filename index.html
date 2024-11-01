@@ -4,8 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeliveryContato</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #000;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background-color: #25D366;
+            color: #fff;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+        }
+
+        .search-bar {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-bar input {
+            width: 35%;
+            padding: 12px;
+            border-radius: 20px;
+            border: none;
+            background-color: #f1f1f1;
+        }
+
+        textarea {
+            width: 50%;
+            resize: none; /* Desativa o redimensionamento */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .send-button {
+            background-color: #25D366;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.2rem;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .send-button:hover {
+            background-color: #20b558;
+        }
+
+        main {
+            padding: 10px;
+        }
+
+        .chat {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .chat img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .chat-info h2 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .chat-info p {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .time {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background-color: #ffffff;
+            border-top: 1px solid #e6e6e6;
+        }
+
+        .footer-icon {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .footer-icon.active {
+            color: #25D366;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -13,11 +138,11 @@
     </header>
 
     <div class="search-bar">
-        <input type="text" id="phone-input" placeholder="Digite o número de telefone"><button onclick="addContact()" class="send-button">
+        <input type="text" id="phone-input" placeholder="Digite o número de telefone">
+        <textarea id="message-input" placeholder="Digite sua mensagem" rows="3"></textarea>
+        <button onclick="addContact()" class="send-button">
             <i class="fas fa-paper-plane"></i>
         </button>
-        <textarea id="message-input" placeholder="Digite sua mensagem" rows="3"></textarea>
-        
     </div>
 
     <main id="chat-list">
@@ -31,6 +156,63 @@
         <div class="footer-icon">Ligações</div>
     </footer>
 
-    <script src="script.js"></script> <!-- Vinculação do arquivo JavaScript -->
+    <script>
+        // Função para carregar os contatos do LocalStorage e exibi-los como links
+        function loadContacts() {
+            const chatList = document.getElementById("chat-list");
+            chatList.innerHTML = ""; // Limpa a lista antes de carregar
+            
+            // Obtém os contatos do LocalStorage (ou um array vazio se não houver contatos)
+            const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+
+            // Adiciona cada contato na lista de chats
+            contacts.forEach((contact, index) => {
+                const chatDiv = document.createElement("div");
+                chatDiv.classList.add("chat");
+
+                chatDiv.innerHTML = `<a href="https://wa.me/${contact.number}" target="_blank">
+                    <img src="https://poloshoppingindaiatuba.com.br/assets/images/732e11da931f0081ab573c6bf3f38459.jpg" alt="User">
+                    <div class="chat-info">
+                        <h2>${contact.message.split(' ')[0]} ${index + 1}</h2> <!-- Nome como a primeira palavra da mensagem -->
+                        <p>Número: ${contact.number}</p>
+                    </a></div>
+                    <span class="time">Agora</span>
+                `;
+                chatList.appendChild(chatDiv);
+            });
+        }
+
+        // Função para adicionar um novo contato e salvar no LocalStorage
+        function addContact() {
+            const phoneInput = document.getElementById("phone-input");
+            const messageInput = document.getElementById("message-input");
+            const phoneNumber = phoneInput.value.trim();
+            const message = messageInput.value.trim();
+
+            // Verifica se o número de telefone é válido (apenas dígitos)
+            const phoneRegex = /^[0-9]+$/; // Apenas números
+            if (!phoneNumber || !phoneRegex.test(phoneNumber)) {
+                alert("Por favor, insira um número de telefone válido.");
+                return;
+            }
+
+            // Se o número for válido, continua o processo
+            const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+            contacts.push({ number: phoneNumber, message: message });
+
+            localStorage.setItem("contacts", JSON.stringify(contacts));
+
+            phoneInput.value = "";
+            messageInput.value = ""; // Limpa o campo de mensagem
+            loadContacts();
+
+            // Redireciona para o WhatsApp com o número e a mensagem
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+        }
+
+        // Carrega os contatos ao iniciar a página
+        window.onload = loadContacts;
+    </script>
 </body>
 </html>
