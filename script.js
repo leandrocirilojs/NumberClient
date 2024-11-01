@@ -37,12 +37,9 @@ function addContact() {
         return;
     }
 
-    // Extrai a primeira palavra do campo de mensagem como nome do contato
-    const contactName = message.split(" ")[0];
-
     // Se o número for válido, continua o processo
     const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
-    contacts.push({ name: contactName, number: phoneNumber, message: message });
+    contacts.push({ number: phoneNumber, message: message });
 
     localStorage.setItem("contacts", JSON.stringify(contacts));
 
@@ -54,5 +51,3 @@ function addContact() {
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
 }
-// Carrega os contatos ao iniciar a página
-window.onload = loadContacts;
