@@ -202,13 +202,14 @@
 
             localStorage.setItem("contacts", JSON.stringify(contacts));
 
-            phoneInput.value = "";
-            messageInput.value = ""; // Limpa o campo de mensagem
-            loadContacts();
-
             // Redireciona para o WhatsApp com o número e a mensagem
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+
+            // Limpa os campos de entrada
+            phoneInput.value = "";
+            messageInput.value = ""; // Limpa o campo de mensagem
+            loadContacts();
         }
 
         // Carrega os contatos ao iniciar a página
