@@ -11,9 +11,9 @@ function loadContacts() {
         const chatDiv = document.createElement("div");
         chatDiv.classList.add("chat");
 
-        chatDiv.innerHTML = `
+        chatDiv.innerHTML = `<a href="https://wa.me/${contact}" target="_blank">
             <img src="https://poloshoppingindaiatuba.com.br/assets/images/732e11da931f0081ab573c6bf3f38459.jpg" alt="User">
-            <a href="https://wa.me/${contact}" target="_blank"><div class="chat-info">
+            <div class="chat-info">
                 <h2>Contato ${index + 1}</h2>
                 <p>Número: ${contact}</a></p>
             </div>
