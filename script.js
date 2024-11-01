@@ -26,24 +26,23 @@ function loadContacts() {
 // Função para adicionar um novo contato e salvar no LocalStorage
 function addContact() {
     const phoneInput = document.getElementById("phone-input");
+    const messageInput = document.getElementById("message-input"); // Novo campo de mensagem
     const phoneNumber = phoneInput.value.trim();
+    const message = messageInput.value.trim(); // Obtendo a mensagem
 
     if (phoneNumber) {
-        // Obtém os contatos existentes do LocalStorage
         const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
-        
-        // Adiciona o novo contato na lista
-        contacts.push(phoneNumber);
+        contacts.push({ number: phoneNumber, message: message }); // Armazenando objeto com número e mensagem
 
-        // Salva a lista atualizada no LocalStorage
         localStorage.setItem("contacts", JSON.stringify(contacts));
 
-        // Limpa o input e recarrega a lista de contatos
         phoneInput.value = "";
+        messageInput.value = ""; // Limpa o campo de mensagem
         loadContacts();
 
-        // Redireciona para o WhatsApp com o número adicionado
-        window.open(`https://wa.me/${phoneNumber}`, '_blank');
+        // Redireciona para o WhatsApp com o número e a mensagem
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
     } else {
         alert("Por favor, insira um número de telefone.");
     }
