@@ -37,7 +37,7 @@ search-bar {
     padding: 0.5rem;
     margin-bottom: 0.5rem; /* Espaço entre os campos */
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 2px;
 }
 
 
@@ -113,6 +113,7 @@ footer {
 }
 
 textarea {
+    width: 100%;
     resize: none; /* Desativa o redimensionamento */
     border: 1px solid #ccc;
     border-radius: 5px;
