@@ -26,27 +26,33 @@ function loadContacts() {
 // Função para adicionar um novo contato e salvar no LocalStorage
 function addContact() {
     const phoneInput = document.getElementById("phone-input");
-    const messageInput = document.getElementById("message-input"); // Novo campo de mensagem
+    const messageInput = document.getElementById("message-input");
     const phoneNumber = phoneInput.value.trim();
-    const message = messageInput.value.trim(); // Obtendo a mensagem
+    const message = messageInput.value.trim();
 
-    if (phoneNumber) {
-        const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
-        contacts.push({ number: phoneNumber, message: message }); // Armazenando objeto com número e mensagem
-
-        localStorage.setItem("contacts", JSON.stringify(contacts));
-
-        phoneInput.value = "";
-        messageInput.value = ""; // Limpa o campo de mensagem
-        loadContacts();
-
-        // Redireciona para o WhatsApp com o número e a mensagem
-        const encodedMessage = encodeURIComponent(message);
-        window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
-    } else {
-        alert("Por favor, insira um número de telefone.");
+    // Verifica se o número de telefone é válido (apenas dígitos)
+    const phoneRegex = /^[0-9]+$/; // Apenas números
+    if (!phoneNumber || !phoneRegex.test(phoneNumber)) {
+        alert("Por favor, insira um número de telefone válido.");
+        return;
     }
-}
 
+    // Extrai a primeira palavra do campo de mensagem como nome do contato
+    const contactName = message.split(" ")[0];
+
+    // Se o número for válido, continua o processo
+    const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+    contacts.push({ name: contactName, number: phoneNumber, message: message });
+
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+
+    phoneInput.value = "";
+    messageInput.value = ""; // Limpa o campo de mensagem
+    loadContacts();
+
+    // Redireciona para o WhatsApp com o número e a mensagem
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+}
 // Carrega os contatos ao iniciar a página
 window.onload = loadContacts;
