@@ -4,10 +4,10 @@ function loadContacts() {
     chatList.innerHTML = ""; // Limpa a lista antes de carregar
     
     // Obtém os contatos do LocalStorage (ou um array vazio se não houver contatos)
-    const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+    const contatos = JSON.parse(localStorage.getItem("contatos")) || [];
 
     // Adiciona cada contato na lista de chats
-    contacts.forEach((contact, index) => {
+    contatos.forEach((contact, index) => {
         const chatDiv = document.createElement("div");
         chatDiv.classList.add("chat");
 
@@ -15,7 +15,7 @@ function loadContacts() {
             <img src="https://poloshoppingindaiatuba.com.br/assets/images/732e11da931f0081ab573c6bf3f38459.jpg" alt="User">
             <div class="chat-info">
                 <h2>Contato ${index + 1}</h2>
-                <p><a href="https://wa.me/${contact}" target="_blank">Número: ${contact}</a></p>
+                <p><a href="https://wa.me/${contatos}" target="_blank">Número: ${contact}</a></p>
             </div>
             <span class="time">Agora</span>
         `;
@@ -30,13 +30,13 @@ function addContact() {
 
     if (phoneNumber) {
         // Obtém os contatos existentes do LocalStorage
-        const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+        const contatos = JSON.parse(localStorage.getItem("contatos")) || [];
         
         // Adiciona o novo contato na lista
-        contacts.push(phoneNumber);
+        contatos.push(phoneNumber);
 
         // Salva a lista atualizada no LocalStorage
-        localStorage.setItem("contacts", JSON.stringify(contacts));
+        localStorage.setItem("contatos", JSON.stringify(contatos));
 
         // Limpa o input e recarrega a lista de contatos
         phoneInput.value = "";
