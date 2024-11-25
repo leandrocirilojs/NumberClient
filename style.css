@@ -1,123 +1,54 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
 body {
-    background-color: #ffffff;
-    color: #000;
+  font-family: Arial, sans-serif;
+  margin: 20px;
 }
 
-a {
-    text-decoration: none;
+input, button {
+  margin: 5px 0;
+  padding: 10px;
+  font-size: 16px;
 }
 
-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background-color: #25D366;
-    color: #fff;
+button {
+  cursor: pointer;
 }
 
-header h1 {
-    font-size: 1.5rem;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-.search-bar { /* Corrigido: adicionada a classe '.' antes de 'search-bar' */
-    display: flex;
-    padding: 10px;
-    background-color: #fff;
-    align-items: center;
-    justify-content: center;
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
 }
 
-.search-bar input {
-    width: 85%;
-    padding: 12px;
-    border-radius: 20px;
-    border: none;
-    background-color: #f1f1f1;
+th {
+  background-color: #f4f4f4;
 }
 
-.send-button {
-    background-color: #25D366;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 1.2rem;
-    margin-left: 8px;
-    cursor: pointer;
+.delete-btn {
+  color: red;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
-.send-button:hover {
-    background-color: #20b558;
+.edit-btn {
+  color: blue;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
-main {
-    padding: 10px;
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  text-align: center;
 }
 
-.chat {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #e6e6e6;
-}
-
-.chat img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.chat-info h2 {
-    font-size: 1rem;
-    margin-bottom: 4px;
-}
-
-.chat-info p {
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.time {
-    margin-left: auto;
-    font-size: 0.8rem;
-    color: #999;
-}
-
-footer {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-    background-color: #ffffff;
-    border-top: 1px solid #e6e6e6;
-}
-
-.footer-icon {
-    color: #999;
-    font-size: 0.9rem;
-}
-
-.footer-icon.active {
-    color: #25D366;
-    font-weight: bold;
-}
-
-textarea {
-    width: 100%;
-    resize: none; /* Desativa o redimensionamento */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
+.hidden {
+  display: none;
 }
