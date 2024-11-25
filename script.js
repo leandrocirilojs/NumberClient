@@ -1,53 +1,122 @@
-// Função para carregar os contatos do LocalStorage e exibi-los como links
-function loadContacts() {
-    const chatList = document.getElementById("chat-list");
-    chatList.innerHTML = ""; // Limpa a lista antes de carregar
-    
-    // Obtém os contatos do LocalStorage (ou um array vazio se não houver contatos)
-    const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
-
-    // Adiciona cada contato na lista de chats
-    contacts.forEach((contact, index) => {
-        const chatDiv = document.createElement("div");
-        chatDiv.classList.add("chat");
-
-        chatDiv.innerHTML = `<a href="https://wa.me/${contact}" target="_blank">
-            <img src="https://poloshoppingindaiatuba.com.br/assets/images/732e11da931f0081ab573c6bf3f38459.jpg" alt="User">
-            <div class="chat-info">
-                <h2>Contato ${index + 1}</h2>
-                <p>Número: ${contact}</a></p>
-            </div>
-            <span class="time">Agora</span>
-        `;
-        chatList.appendChild(chatDiv);
-    });
-}
-
-// Função para adicionar um novo contato e salvar no LocalStorage
-function addContact() {
-    const phoneInput = document.getElementById("phone-input");
-    const messageInput = document.getElementById("message-input");
-    const phoneNumber = phoneInput.value.trim();
-    const message = messageInput.value.trim();
-
-    // Verifica se o número de telefone é válido (apenas dígitos)
-    const phoneRegex = /^[0-9]+$/; // Apenas números
-    if (!phoneNumber || !phoneRegex.test(phoneNumber)) {
-        alert("Por favor, insira um número de telefone válido.");
-        return;
+const app = Vue.createApp({
+  data() {
+    return {
+      loginUsuario: '',
+      loginSenha: '',
+      usuarioLogado: false,
+      novoCliente: { nome: '', email: '' },
+      clientes: [],
+      clienteEmEdicao: null,
+      termoBusca: ''
+    };
+  },
+  computed: {
+    clientesFiltrados() {
+      if (this.termoBusca.trim() === '') {
+        return this.clientes;
+      }
+      const termo = this.termoBusca.toLowerCase();
+      return this.clientes.filter(cliente =>
+        cliente.nome.toLowerCase().includes(termo) ||
+        cliente.email.toLowerCase().includes(termo)
+      );
     }
+  },
+  methods: {
+    carregarClientes() {
+      const dadosSalvos = localStorage.getItem('clientes');
+      if (dadosSalvos) {
+        this.clientes = JSON.parse(dadosSalvos);
+      }
+    },
+    salvarClientes() {
+      localStorage.setItem('clientes', JSON.stringify(this.clientes));
+    },
+    autenticar() {
+      if (this.loginUsuario === 'admin' && this.loginSenha === '1234') {
+        this.usuarioLogado = true;
+        localStorage.setItem('usuarioLogado', 'true');
+        Swal.fire('Login Bem-Sucedido!', 'Bem-vindo ao sistema!', 'success');
+      } else {
+        Swal.fire('Erro!', 'Usuário ou senha incorretos.', 'error');
+      }
+    },
+    logout() {
+      this.usuarioLogado = false;
+      localStorage.removeItem('usuarioLogado');
+      Swal.fire('Desconectado!', 'Você saiu do sistema.', 'info');
+    },
+    adicionarOuAtualizarCliente() {
+      if (this.novoCliente.nome.trim() === '' || this.novoCliente.email.trim() === '') {
+        Swal.fire('Erro!', 'Por favor, preencha todos os campos!', 'error');
+        return;
+      }
 
-    // Se o número for válido, continua o processo
-    const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
-    contacts.push({ number: phoneNumber, message: message });
+      if (this.clienteEmEdicao !== null) {
+        this.clientes[this.clienteEmEdicao] = { ...this.novoCliente };
+        this.clienteEmEdicao = null;
+        Swal.fire('Sucesso!', 'Cliente atualizado com sucesso!', 'success');
+      } else {
+        this.clientes.push({ ...this.novoCliente });
+        Swal.fire('Sucesso!', 'Cliente adicionado com sucesso!', 'success');
+      }
 
-    localStorage.setItem("contacts", JSON.stringify(contacts));
+      this.novoCliente.nome = '';
+      this.novoCliente.email = '';
+      this.salvarClientes();
+    },
+    editarCliente(index) {
+      this.novoCliente = { ...this.clientes[index] };
+      this.clienteEmEdicao = index;
+    },
+    cancelarEdicao() {
+      this.novoCliente.nome = '';
+      this.novoCliente.email = '';
+      this.clienteEmEdicao = null;
+    },
+    removerCliente(index) {
+      Swal.fire({
+        title: 'Tem certeza?',
+        text: 'Você não poderá reverter esta ação!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, remover!',
+        cancelButtonText: 'Cancelar'
+      }).then(result => {
+        if (result.isConfirmed) {
+          this.clientes.splice(index, 1);
+          this.salvarClientes();
+          Swal.fire('Removido!', 'O cliente foi removido com sucesso.', 'success');
+        }
+      });
+    },
+    gerarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-    phoneInput.value = "";
-    messageInput.value = ""; // Limpa o campo de mensagem
-    loadContacts();
+      doc.setFontSize(18);
+      doc.text('Lista de Clientes', 10, 10);
 
-    // Redireciona para o WhatsApp com o número e a mensagem
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
-}
+      const headers = [['#', 'Nome', 'Email']];
+      const dados = this.clientes.map((cliente, index) => [
+        index + 1,
+        cliente.nome,
+        cliente.email,
+      ]);
+
+      doc.autoTable({
+        head: headers,
+        body: dados,
+        startY: 20,
+      });
+
+      doc.save('clientes.pdf');
+    }
+  },
+  mounted() {
+    this.carregarClientes();
+    this.usuarioLogado = localStorage.getItem('usuarioLogado') === 'true';
+  }
+});
+
+app.mount('#app');
