@@ -46,25 +46,34 @@ const app = Vue.createApp({
       Swal.fire('Desconectado!', 'Você saiu do sistema.', 'info');
     },
     adicionarOuAtualizarCliente() {
+      // Validações de campos
       if (
         this.novoCliente.nome.trim() === '' ||
-        this.novoCliente.gasto === '' ||
-        this.novoCliente.juros === '' ||
-        this.novoCliente.data === ''
+        this.novoCliente.gasto.trim() === '' ||
+        this.novoCliente.juros.trim() === '' ||
+        this.novoCliente.data.trim() === ''
       ) {
         Swal.fire('Erro!', 'Por favor, preencha todos os campos!', 'error');
         return;
       }
 
+      // Verificar se "gasto" e "juros" são numéricos
+      if (isNaN(parseFloat(this.novoCliente.gasto)) || isNaN(parseFloat(this.novoCliente.juros))) {
+        Swal.fire('Erro!', 'Os campos "Gasto" e "Juros" devem conter valores numéricos!', 'error');
+        return;
+      }
+
+      // Atualizar ou adicionar cliente
       if (this.clienteEmEdicao !== null) {
         this.clientes[this.clienteEmEdicao] = { ...this.novoCliente };
         this.clienteEmEdicao = null;
-        Swal.fire('Sucesso!', 'Registro atualizado com sucesso!', 'success');
+        Swal.fire('Sucesso!', 'Cliente atualizado com sucesso!', 'success');
       } else {
         this.clientes.push({ ...this.novoCliente });
-        Swal.fire('Sucesso!', 'Registro adicionado com sucesso!', 'success');
+        Swal.fire('Sucesso!', 'Cliente adicionado com sucesso!', 'success');
       }
 
+      // Limpar campos e salvar
       this.novoCliente = { nome: '', gasto: '', juros: '', data: '' };
       this.salvarClientes();
     },
@@ -88,7 +97,7 @@ const app = Vue.createApp({
         if (result.isConfirmed) {
           this.clientes.splice(index, 1);
           this.salvarClientes();
-          Swal.fire('Removido!', 'O registro foi removido com sucesso.', 'success');
+          Swal.fire('Removido!', 'O cliente foi removido com sucesso.', 'success');
         }
       });
     },
@@ -96,25 +105,28 @@ const app = Vue.createApp({
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      doc.setFontSize(18);
-      doc.text('Relatório de Gastos', 10, 10);
+      // Adicionar título
+      doc.setFontSize(16);
+      doc.text('Lista de Clientes', 10, 10);
 
-      const headers = [['#', 'Nome', 'Gasto', 'Juros (%)', 'Data']];
-      const data = this.clientes.map((cliente, index) => [
-        index + 1,
+      // Cabeçalho da tabela
+      const headers = [['Nome', 'Gasto', 'Juros', 'Data']];
+      const dados = this.clientes.map(cliente => [
         cliente.nome,
         cliente.gasto,
         cliente.juros,
         cliente.data
       ]);
 
+      // Adicionar tabela ao PDF
       doc.autoTable({
         head: headers,
-        body: data,
-        startY: 20,
+        body: dados,
+        startY: 20
       });
 
-      doc.save('relatorio-gastos.pdf');
+      // Salvar o arquivo PDF
+      doc.save('clientes.pdf');
     }
   },
   mounted() {
