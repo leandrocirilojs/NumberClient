@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Clientes</title>
+  <title>Cadastro de Gastos</title>
   <script src="https://unpkg.com/vue@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -17,14 +17,16 @@
       <h2>Login</h2>
       <label>Usuário:</label><br>
       <input type="text" v-model="loginUsuario" placeholder="Digite seu usuário" /><br>
+
       <label>Senha:</label><br>
       <input type="password" v-model="loginSenha" placeholder="Digite sua senha" /><br>
+
       <button @click="autenticar">Entrar</button>
     </div>
 
     <!-- Sistema de Cadastro -->
     <div v-else>
-      <h1>Cadastro de Clientes</h1>
+      <h1>Cadastro de Gastos</h1>
       <button @click="logout" style="float: right;">Sair</button>
       <div style="clear: both;"></div>
 
@@ -32,28 +34,37 @@
       <div>
         <label>Nome:</label><br>
         <input type="text" v-model="novoCliente.nome" placeholder="Digite o nome" /><br>
-        <label>Email:</label><br>
-        <input type="email" v-model="novoCliente.email" placeholder="Digite o email" /><br>
+
+        <label>Gasto:</label><br>
+        <input type="number" v-model="novoCliente.gasto" placeholder="Digite o valor gasto" /><br>
+
+        <label>Juros:</label><br>
+        <input type="number" v-model="novoCliente.juros" placeholder="Digite os juros (%)" /><br>
+
+        <label>Data:</label><br>
+        <input type="date" v-model="novoCliente.data" /><br>
+
         <button @click="adicionarOuAtualizarCliente">
-          {{ clienteEmEdicao !== null ? "Salvar Alterações" : "Adicionar Cliente" }}
+          {{ clienteEmEdicao !== null ? "Salvar Alterações" : "Adicionar Gasto" }}
         </button>
         <button v-if="clienteEmEdicao !== null" @click="cancelarEdicao">Cancelar</button>
       </div>
 
       <!-- Campo de Busca -->
       <div style="margin-top: 20px;">
-        <label>Buscar Cliente:</label><br>
-        <input type="text" v-model="termoBusca" placeholder="Digite um nome ou email" />
-        <button @click="gerarPDF">Gerar PDF</button>
+        <label>Buscar por Nome:</label><br>
+        <input type="text" v-model="termoBusca" placeholder="Digite um nome" />
       </div>
 
-      <!-- Tabela de Clientes -->
+      <!-- Tabela de Gastos -->
       <table v-if="clientesFiltrados.length > 0">
         <thead>
           <tr>
             <th>#</th>
             <th>Nome</th>
-            <th>Email</th>
+            <th>Gasto</th>
+            <th>Juros (%)</th>
+            <th>Data</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -61,7 +72,9 @@
           <tr v-for="(cliente, index) in clientesFiltrados" :key="index">
             <td>{{ index + 1 }}</td>
             <td>{{ cliente.nome }}</td>
-            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.gasto }}</td>
+            <td>{{ cliente.juros }}</td>
+            <td>{{ cliente.data }}</td>
             <td>
               <button class="edit-btn" @click="editarCliente(index)">Editar</button>
               <button class="delete-btn" @click="removerCliente(index)">Remover</button>
@@ -69,7 +82,10 @@
           </tr>
         </tbody>
       </table>
-      <p v-else>Nenhum cliente encontrado.</p>
+      <p v-else>Nenhum registro encontrado.</p>
+
+      <!-- Botão para Gerar PDF -->
+      <button @click="gerarPDF">Gerar PDF</button>
     </div>
   </div>
   <script src="app.js"></script>
