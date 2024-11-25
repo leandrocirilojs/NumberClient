@@ -12,21 +12,18 @@ const app = Vue.createApp({
   },
   computed: {
     clientesFiltrados() {
-      if (this.termoBusca.trim() === '') {
-        return this.clientes;
-      }
+      if (this.termoBusca.trim() === '') return this.clientes;
       const termo = this.termoBusca.toLowerCase();
       return this.clientes.filter(cliente =>
-        cliente.nome.toLowerCase().includes(termo)
+        cliente.nome.toLowerCase().includes(termo) ||
+        cliente.gasto.toString().includes(termo)
       );
     }
   },
   methods: {
     carregarClientes() {
       const dadosSalvos = localStorage.getItem('clientes');
-      if (dadosSalvos) {
-        this.clientes = JSON.parse(dadosSalvos);
-      }
+      if (dadosSalvos) this.clientes = JSON.parse(dadosSalvos);
     },
     salvarClientes() {
       localStorage.setItem('clientes', JSON.stringify(this.clientes));
@@ -46,24 +43,16 @@ const app = Vue.createApp({
       Swal.fire('Desconectado!', 'Você saiu do sistema.', 'info');
     },
     adicionarOuAtualizarCliente() {
-      // Validações de campos
       if (
-        this.novoCliente.nome.trim() === '' ||
-        this.novoCliente.gasto.trim() === '' ||
-        this.novoCliente.juros.trim() === '' ||
-        this.novoCliente.data.trim() === ''
+        !this.novoCliente.nome.trim() ||
+        !this.novoCliente.gasto ||
+        !this.novoCliente.juros ||
+        !this.novoCliente.data
       ) {
         Swal.fire('Erro!', 'Por favor, preencha todos os campos!', 'error');
         return;
       }
 
-      // Verificar se "gasto" e "juros" são numéricos
-      if (isNaN(parseFloat(this.novoCliente.gasto)) || isNaN(parseFloat(this.novoCliente.juros))) {
-        Swal.fire('Erro!', 'Os campos "Gasto" e "Juros" devem conter valores numéricos!', 'error');
-        return;
-      }
-
-      // Atualizar ou adicionar cliente
       if (this.clienteEmEdicao !== null) {
         this.clientes[this.clienteEmEdicao] = { ...this.novoCliente };
         this.clienteEmEdicao = null;
@@ -73,7 +62,6 @@ const app = Vue.createApp({
         Swal.fire('Sucesso!', 'Cliente adicionado com sucesso!', 'success');
       }
 
-      // Limpar campos e salvar
       this.novoCliente = { nome: '', gasto: '', juros: '', data: '' };
       this.salvarClientes();
     },
@@ -100,6 +88,30 @@ const app = Vue.createApp({
           Swal.fire('Removido!', 'O cliente foi removido com sucesso.', 'success');
         }
       });
+    },
+    gerarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.text('Relatório de Clientes', 10, 10);
+
+      const headers = [['#', 'Nome', 'Gasto', 'Juros', 'Data']];
+      const dados = this.clientes.map((cliente, index) => [
+        index + 1,
+        cliente.nome,
+        cliente.gasto,
+        cliente.juros,
+        cliente.data
+      ]);
+
+      doc.autoTable({
+        head: headers,
+        body: dados,
+        startY: 20,
+      });
+
+      doc.save('clientes.pdf');
     }
   },
   mounted() {
