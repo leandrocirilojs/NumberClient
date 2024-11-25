@@ -100,33 +100,6 @@ const app = Vue.createApp({
           Swal.fire('Removido!', 'O cliente foi removido com sucesso.', 'success');
         }
       });
-    },
-    gerarPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      // Adicionar título
-      doc.setFontSize(16);
-      doc.text('Lista de Clientes', 10, 10);
-
-      // Cabeçalho da tabela
-      const headers = [['Nome', 'Gasto', 'Juros', 'Data']];
-      const dados = this.clientes.map(cliente => [
-        cliente.nome,
-        cliente.gasto,
-        cliente.juros,
-        cliente.data
-      ]);
-
-      // Adicionar tabela ao PDF
-      doc.autoTable({
-        head: headers,
-        body: dados,
-        startY: 20
-      });
-
-      // Salvar o arquivo PDF
-      doc.save('clientes.pdf');
     }
   },
   mounted() {
